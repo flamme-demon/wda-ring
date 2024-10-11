@@ -36,6 +36,7 @@ const options = {
   "marimba.wav": "Marimba",
   "stranger_things.mp3": "Stranger Things",
   "breaking_bad.mp3": "Breaking Bad",
+  "Helldivers2.mp3": "Helldivers2",
   "huawei.mp3": "Huawei",
   "lg_peanut.mp3": "Peanut",
   "xylo.mp3": "Xylophone"
