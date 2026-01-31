@@ -4,7 +4,6 @@ import {
 
 
 let url;
-let customAudio = null;
 
 const app = new App();
 
@@ -22,42 +21,6 @@ const ringStorage = (key, action, ring) => {
       break;
   }
   return localStorage.getItem(key);
-}
-
-const configureRing = (ring) => {
-  console.log('ring background - configuring ringtone:', ring);
-  app.configureSounds({
-    ring: ring
-  });
-}
-
-// Play custom ringtone by stopping default and playing our own
-const playCustomRingtone = (ringUrl) => {
-  console.log('ring background - playing custom ringtone:', ringUrl);
-
-  // Stop the default ringtone
-  app.stopCurrentSound();
-
-  // Stop any previous custom audio
-  if (customAudio) {
-    customAudio.pause();
-    customAudio = null;
-  }
-
-  // Play our custom ringtone
-  customAudio = new Audio(ringUrl);
-  customAudio.loop = true;
-  customAudio.play().catch(e => {
-    console.log('ring background - audio play error:', e);
-  });
-}
-
-// Stop custom ringtone
-const stopCustomRingtone = () => {
-  if (customAudio) {
-    customAudio.pause();
-    customAudio = null;
-  }
 }
 
 const handleRing = (msg) => {
@@ -83,7 +46,7 @@ const isInternalCall = (callerNumber) => {
   return digits.length >= 3 && digits.length <= 5;
 }
 
-// Handle incoming call and play the appropriate ringtone
+// Handle incoming call - configure and play the appropriate ringtone
 const handleIncomingCall = (direction, callerNumber) => {
   const ringInternal = ringStorage(STORAGE_KEY_INTERNAL);
   const ringExternal = ringStorage(STORAGE_KEY_EXTERNAL);
@@ -104,7 +67,7 @@ const handleIncomingCall = (direction, callerNumber) => {
 
   console.log('ring background - isInternal:', isInternal);
 
-  // Determine which ringtone to play
+  // Determine which ringtone to use
   let ringtoneToPlay = null;
 
   if (isInternal && ringInternal) {
@@ -118,7 +81,12 @@ const handleIncomingCall = (direction, callerNumber) => {
   }
 
   if (ringtoneToPlay) {
-    playCustomRingtone(ringtoneToPlay);
+    console.log('ring background - configuring and playing:', ringtoneToPlay);
+
+    // Stop current sound, configure new ringtone, then play it
+    app.stopCurrentSound();
+    app.configureSounds({ ring: ringtoneToPlay });
+    app.playIncomingCallSound();
   }
 }
 
@@ -149,11 +117,6 @@ app.onWebsocketMessage = (message) => {
         }
       }
     }
-
-    // Stop custom ringtone when call is answered or hung up
-    if (wsMessage?.name === 'call_answered' || wsMessage?.name === 'call_ended') {
-      stopCustomRingtone();
-    }
   } catch (e) {
     console.log('ring background - websocket error:', e);
   }
@@ -173,16 +136,6 @@ app.onCallIncoming = (call) => {
 
     setTimeout(() => handledCallIds.delete(callId), 30000);
   }
-}
-
-app.onCallAnswered = () => {
-  console.log('ring background - call answered, stopping ringtone');
-  stopCustomRingtone();
-}
-
-app.onCallHungUp = () => {
-  console.log('ring background - call hung up, stopping ringtone');
-  stopCustomRingtone();
 }
 
 app.onBackgroundMessage = msg => {
