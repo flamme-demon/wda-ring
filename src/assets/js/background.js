@@ -4,6 +4,7 @@ import {
 
 
 let url;
+let customAudio = null;
 
 const app = new App();
 
@@ -23,11 +24,40 @@ const ringStorage = (key, action, ring) => {
   return localStorage.getItem(key);
 }
 
-const setRing = (ring) => {
-  console.log('ring background - setting ringtone:', ring);
+const configureRing = (ring) => {
+  console.log('ring background - configuring ringtone:', ring);
   app.configureSounds({
     ring: ring
   });
+}
+
+// Play custom ringtone by stopping default and playing our own
+const playCustomRingtone = (ringUrl) => {
+  console.log('ring background - playing custom ringtone:', ringUrl);
+
+  // Stop the default ringtone
+  app.stopCurrentSound();
+
+  // Stop any previous custom audio
+  if (customAudio) {
+    customAudio.pause();
+    customAudio = null;
+  }
+
+  // Play our custom ringtone
+  customAudio = new Audio(ringUrl);
+  customAudio.loop = true;
+  customAudio.play().catch(e => {
+    console.log('ring background - audio play error:', e);
+  });
+}
+
+// Stop custom ringtone
+const stopCustomRingtone = () => {
+  if (customAudio) {
+    customAudio.pause();
+    customAudio = null;
+  }
 }
 
 const handleRing = (msg) => {
@@ -38,41 +68,22 @@ const handleRing = (msg) => {
   switch(ring) {
     case "original":
       ringStorage(storageKey, "delete");
-      applyDefaultRingtone();
       break;
     default:
       const sound = `${url}/sounds/${ring}`;
       ringStorage(storageKey, "set", sound);
-      applyDefaultRingtone();
       break;
   }
 }
 
-// Apply the default ringtone (external preferred, then internal)
-const applyDefaultRingtone = () => {
-  const ringExternal = ringStorage(STORAGE_KEY_EXTERNAL);
-  const ringInternal = ringStorage(STORAGE_KEY_INTERNAL);
-
-  if (ringExternal) {
-    setRing(ringExternal);
-  } else if (ringInternal) {
-    setRing(ringInternal);
-  } else {
-    app.resetSounds();
-  }
-}
-
 // Determine if a call is internal based on the caller number
-// Internal extensions are typically short (3-5 digits)
 const isInternalCall = (callerNumber) => {
   if (!callerNumber) return false;
-  // Remove any non-digit characters
   const digits = callerNumber.replace(/\D/g, '');
-  // Internal extensions are typically 3-5 digits
   return digits.length >= 3 && digits.length <= 5;
 }
 
-// Handle incoming call and set the appropriate ringtone
+// Handle incoming call and play the appropriate ringtone
 const handleIncomingCall = (direction, callerNumber) => {
   const ringInternal = ringStorage(STORAGE_KEY_INTERNAL);
   const ringExternal = ringStorage(STORAGE_KEY_EXTERNAL);
@@ -83,7 +94,7 @@ const handleIncomingCall = (direction, callerNumber) => {
   console.log('ring background - ringInternal:', ringInternal);
   console.log('ring background - ringExternal:', ringExternal);
 
-  // Determine if internal: use direction if available, otherwise analyze caller number
+  // Determine if internal
   let isInternal = false;
   if (direction) {
     isInternal = (direction === 'internal');
@@ -93,74 +104,85 @@ const handleIncomingCall = (direction, callerNumber) => {
 
   console.log('ring background - isInternal:', isInternal);
 
+  // Determine which ringtone to play
+  let ringtoneToPlay = null;
+
   if (isInternal && ringInternal) {
-    setRing(ringInternal);
+    ringtoneToPlay = ringInternal;
   } else if (!isInternal && ringExternal) {
-    setRing(ringExternal);
-  } else {
-    // Fallback
-    if (ringExternal) {
-      setRing(ringExternal);
-    } else if (ringInternal) {
-      setRing(ringInternal);
-    } else {
-      app.resetSounds();
-    }
+    ringtoneToPlay = ringExternal;
+  } else if (ringExternal) {
+    ringtoneToPlay = ringExternal;
+  } else if (ringInternal) {
+    ringtoneToPlay = ringInternal;
+  }
+
+  if (ringtoneToPlay) {
+    playCustomRingtone(ringtoneToPlay);
   }
 }
 
-// Track call direction from WebSocket messages
-let lastCallDirection = null;
+// Track if we already handled the current call
+let handledCallIds = new Set();
 
 // Listen for WebSocket messages to get call direction
 app.onWebsocketMessage = (message) => {
-  console.log('ring background - websocket message received:', message);
   try {
     const wsMessage = typeof message === 'string' ? JSON.parse(message) : message;
-    console.log('ring background - parsed websocket:', JSON.stringify(wsMessage));
 
-    // Try different message structures
-    // Structure 1: {op, code, data: {name, data: {direction}}}
-    // Structure 2: {name, data: {direction}}
-    let eventName = null;
-    let callData = null;
+    // Structure: {name: "call_created", data: {direction, is_caller, sip_call_id, ...}}
+    if (wsMessage?.name === 'call_created' && wsMessage?.data) {
+      const callData = wsMessage.data;
 
-    if (wsMessage?.data?.name && wsMessage?.data?.data) {
-      // Structure 1
-      eventName = wsMessage.data.name;
-      callData = wsMessage.data.data;
-    } else if (wsMessage?.name && wsMessage?.data) {
-      // Structure 2
-      eventName = wsMessage.name;
-      callData = wsMessage.data;
+      // Only handle incoming calls (is_caller: false)
+      if (callData.is_caller === false && callData.direction) {
+        const callId = callData.sip_call_id || callData.call_id;
+
+        // Avoid handling the same call twice
+        if (!handledCallIds.has(callId)) {
+          handledCallIds.add(callId);
+          console.log('ring background - call_created, handling call:', callId);
+          handleIncomingCall(callData.direction, callData.peer_caller_id_number);
+
+          // Clean up old call IDs after 30 seconds
+          setTimeout(() => handledCallIds.delete(callId), 30000);
+        }
+      }
     }
 
-    if (eventName === 'call_created' && callData) {
-      console.log('ring background - call_created event detected');
-      console.log('ring background - callData:', JSON.stringify(callData));
-
-      if (callData.is_caller === false && callData.direction) {
-        lastCallDirection = callData.direction;
-        console.log('ring background - stored direction:', lastCallDirection);
-        handleIncomingCall(callData.direction, callData.peer_caller_id_number);
-      }
+    // Stop custom ringtone when call is answered or hung up
+    if (wsMessage?.name === 'call_answered' || wsMessage?.name === 'call_ended') {
+      stopCustomRingtone();
     }
   } catch (e) {
     console.log('ring background - websocket error:', e);
   }
 }
 
-// Listen for SDK call incoming event
+// Listen for SDK call events
 app.onCallIncoming = (call) => {
-  console.log('ring background - onCallIncoming triggered');
-  console.log('ring background - call object:', JSON.stringify(call));
+  console.log('ring background - onCallIncoming:', call.sipCallId);
 
-  // Use stored direction from websocket if available, otherwise analyze number
-  const callerNumber = call.callerNumber || call.number;
-  handleIncomingCall(lastCallDirection, callerNumber);
+  const callId = call.sipCallId || call.callId;
 
-  // Reset for next call
-  lastCallDirection = null;
+  // Only handle if not already handled by websocket
+  if (!handledCallIds.has(callId)) {
+    handledCallIds.add(callId);
+    const callerNumber = call.callerNumber || call.number;
+    handleIncomingCall(null, callerNumber);
+
+    setTimeout(() => handledCallIds.delete(callId), 30000);
+  }
+}
+
+app.onCallAnswered = () => {
+  console.log('ring background - call answered, stopping ringtone');
+  stopCustomRingtone();
+}
+
+app.onCallHungUp = () => {
+  console.log('ring background - call hung up, stopping ringtone');
+  stopCustomRingtone();
 }
 
 app.onBackgroundMessage = msg => {
@@ -183,9 +205,8 @@ app.onBackgroundMessage = msg => {
 (async () => {
   await app.initialize();
   const context = app.getContext();
-  url = context.app.extra.baseUrl;
+  // Remove trailing slash if present to avoid double slashes
+  url = (context.app.extra.baseUrl || '').replace(/\/$/, '');
 
-  applyDefaultRingtone();
-
-  console.log('ring background - background launched, listening for calls...');
+  console.log('ring background - background launched, url:', url);
 })();
