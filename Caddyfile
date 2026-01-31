@@ -17,7 +17,7 @@
 }
 
 :80 {
-	root * /usr/share/caddy
+	root * /usr/share/caddy/public
 	file_server
 
 	import cors *
