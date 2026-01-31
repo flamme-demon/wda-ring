@@ -56,18 +56,19 @@ const options = {
 app.onIframeMessage = (msg) => {
   if (msg.value === 'config') {
     if (msg.ringInternal) {
-      const ring = msg.ringInternal.split("/").pop();
-      if (ring.startsWith('data:')) {
+      // Check if it's base64 data (custom file) before splitting
+      if (msg.ringInternal.startsWith('data:')) {
         ringInternalElem.value = 'custom';
       } else {
+        const ring = msg.ringInternal.split("/").pop();
         ringInternalElem.value = ring;
       }
     }
     if (msg.ringExternal) {
-      const ring = msg.ringExternal.split("/").pop();
-      if (ring.startsWith('data:')) {
+      if (msg.ringExternal.startsWith('data:')) {
         ringExternalElem.value = 'custom';
       } else {
+        const ring = msg.ringExternal.split("/").pop();
         ringExternalElem.value = ring;
       }
     }
