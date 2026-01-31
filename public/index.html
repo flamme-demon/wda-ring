@@ -5,19 +5,20 @@
       margin: 0;
       padding: 0;
       overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
     .container {
       padding: 16px;
     }
     .ring-section {
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
     .ring-section:last-child {
       margin-bottom: 0;
     }
     .section-title {
-      font-size: 13px;
-      font-weight: 500;
+      font-size: 12px;
+      font-weight: 600;
       color: #666;
       margin-bottom: 8px;
       text-transform: uppercase;
@@ -26,12 +27,12 @@
     .ring-row {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
     }
     .ring-select {
       flex: 1;
-      padding: 10px 12px;
-      font-size: 14px;
+      padding: 8px 10px;
+      font-size: 13px;
       border: 1px solid #ddd;
       border-radius: 6px;
       background: #fff;
@@ -46,12 +47,12 @@
     .ring-select:focus {
       border-color: #2196F3;
     }
-    .play-btn {
-      width: 40px;
-      height: 40px;
+    .btn-icon {
+      width: 36px;
+      height: 36px;
       border: none;
       border-radius: 50%;
-      background: #f5f5f5;
+      background: #f0f0f0;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -59,32 +60,43 @@
       transition: all 0.2s;
       flex-shrink: 0;
     }
-    .play-btn:hover {
+    .btn-icon:hover {
       background: #e0e0e0;
     }
-    .play-btn.playing {
+    .btn-icon.playing {
       background: #2196F3;
     }
-    .play-btn.playing:hover {
+    .btn-icon.playing:hover {
       background: #1976D2;
     }
-    .play-btn svg {
-      width: 16px;
-      height: 16px;
-      fill: #666;
+    .btn-icon svg {
+      width: 14px;
+      height: 14px;
+      fill: #555;
     }
-    .play-btn.playing svg {
+    .btn-icon.playing svg {
       fill: #fff;
     }
     .play-icon, .stop-icon {
       display: none;
     }
-    .play-btn .play-icon {
+    .btn-icon .play-icon {
       display: block;
     }
-    .play-btn.playing .play-icon {
+    .btn-icon.playing .play-icon {
       display: none;
     }
-    .play-btn.playing .stop-icon {
+    .btn-icon.playing .stop-icon {
       display: block;
-    }</style><script defer="defer" src="assets/js/ring.js"></script><script defer="defer" src="assets/js/background.js"></script></head><body><div class="container"><div class="ring-section"><div class="section-title" id="label-internal"></div><div class="ring-row"><select id="ring-internal" class="ring-select"></select> <button id="playButton-internal" class="play-btn" title="Test ringtone"><svg class="play-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg> <svg class="stop-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6 6h12v12H6z"/></svg></button></div></div><div class="ring-section"><div class="section-title" id="label-external"></div><div class="ring-row"><select id="ring-external" class="ring-select"></select> <button id="playButton-external" class="play-btn" title="Test ringtone"><svg class="play-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg> <svg class="stop-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6 6h12v12H6z"/></svg></button></div></div></div></body></html>
+    }
+    .file-input {
+      display: none;
+    }
+    .custom-name {
+      font-size: 11px;
+      color: #888;
+      margin-top: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }</style><script defer="defer" src="assets/js/ring.js"></script><script defer="defer" src="assets/js/background.js"></script></head><body><div class="container"><div class="ring-section"><div class="section-title" id="label-internal"></div><div class="ring-row"><select id="ring-internal" class="ring-select"></select> <button id="playButton-internal" class="btn-icon" title="Test"><svg class="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> <svg class="stop-icon" viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg></button> <button id="browseButton-internal" class="btn-icon" title="Parcourir"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button> <input type="file" id="fileInput-internal" class="file-input" accept="audio/*"></div><div id="customName-internal" class="custom-name"></div></div><div class="ring-section"><div class="section-title" id="label-external"></div><div class="ring-row"><select id="ring-external" class="ring-select"></select> <button id="playButton-external" class="btn-icon" title="Test"><svg class="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> <svg class="stop-icon" viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg></button> <button id="browseButton-external" class="btn-icon" title="Parcourir"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button> <input type="file" id="fileInput-external" class="file-input" accept="audio/*"></div><div id="customName-external" class="custom-name"></div></div></div></body></html>

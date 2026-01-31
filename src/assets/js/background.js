@@ -32,6 +32,12 @@ const handleRing = (msg) => {
     case "original":
       ringStorage(storageKey, "delete");
       break;
+    case "custom":
+      // Custom file: store the base64 data directly
+      if (msg.customData) {
+        ringStorage(storageKey, "set", msg.customData);
+      }
+      break;
     default:
       const sound = `${url}/sounds/${ring}`;
       ringStorage(storageKey, "set", sound);
