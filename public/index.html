@@ -1,5 +1,19 @@
-<html><head><meta name="viewport" content="width=device-width,initial-scale=1"/><script defer="defer" src="assets/js/ring.js"></script><script defer="defer" src="assets/js/background.js"></script></head><body><link rel="stylesheet" href="https://cdn.muicss.com/mui-0.10.3/css/mui.min.css" lazyload="1"/><style>.ring-section {
+<!doctype html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"/><link rel="stylesheet" href="https://cdn.muicss.com/mui-0.10.3/css/mui.min.css"/><style>* {
+      box-sizing: border-box;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    .container {
+      padding: 16px;
+    }
+    .ring-section {
       margin-bottom: 24px;
+    }
+    .ring-section:last-child {
+      margin-bottom: 0;
     }
     .section-title {
       font-size: 13px;
@@ -24,6 +38,7 @@
       cursor: pointer;
       outline: none;
       transition: border-color 0.2s;
+      min-width: 0;
     }
     .ring-select:hover {
       border-color: #bbb;
@@ -72,4 +87,4 @@
     }
     .play-btn.playing .stop-icon {
       display: block;
-    }</style><div class="mui-container" style="padding: 16px;"><div class="ring-section"><div class="section-title" id="label-internal"></div><div class="ring-row"><select id="ring-internal" class="ring-select"></select> <button id="playButton-internal" class="play-btn" title="Test ringtone"><svg class="play-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg> <svg class="stop-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6 6h12v12H6z"/></svg></button></div></div><div class="ring-section"><div class="section-title" id="label-external"></div><div class="ring-row"><select id="ring-external" class="ring-select"></select> <button id="playButton-external" class="play-btn" title="Test ringtone"><svg class="play-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg> <svg class="stop-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6 6h12v12H6z"/></svg></button></div></div></div></body><script src="https://cdn.muicss.com/mui-0.10.3/js/mui.min.js"></script></html>
+    }</style><script defer="defer" src="assets/js/ring.js"></script><script defer="defer" src="assets/js/background.js"></script></head><body><div class="container"><div class="ring-section"><div class="section-title" id="label-internal"></div><div class="ring-row"><select id="ring-internal" class="ring-select"></select> <button id="playButton-internal" class="play-btn" title="Test ringtone"><svg class="play-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg> <svg class="stop-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6 6h12v12H6z"/></svg></button></div></div><div class="ring-section"><div class="section-title" id="label-external"></div><div class="ring-row"><select id="ring-external" class="ring-select"></select> <button id="playButton-external" class="play-btn" title="Test ringtone"><svg class="play-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg> <svg class="stop-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6 6h12v12H6z"/></svg></button></div></div></div></body></html>

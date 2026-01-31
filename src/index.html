@@ -1,13 +1,26 @@
+<!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-</head>
-<body>
-
-  <link rel="stylesheet" href="https://cdn.muicss.com/mui-0.10.3/css/mui.min.css" lazyload="1"/>
+  <link rel="stylesheet" href="https://cdn.muicss.com/mui-0.10.3/css/mui.min.css"/>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    .container {
+      padding: 16px;
+    }
     .ring-section {
       margin-bottom: 24px;
+    }
+    .ring-section:last-child {
+      margin-bottom: 0;
     }
     .section-title {
       font-size: 13px;
@@ -32,6 +45,7 @@
       cursor: pointer;
       outline: none;
       transition: border-color 0.2s;
+      min-width: 0;
     }
     .ring-select:hover {
       border-color: #bbb;
@@ -82,8 +96,9 @@
       display: block;
     }
   </style>
-
-<div class="mui-container" style="padding: 16px;">
+</head>
+<body>
+<div class="container">
   <!-- Internal calls ringtone -->
   <div class="ring-section">
     <div class="section-title" id="label-internal"></div>
@@ -117,5 +132,4 @@
   </div>
 </div>
 </body>
-<script src="https://cdn.muicss.com/mui-0.10.3/js/mui.min.js"></script>
 </html>
