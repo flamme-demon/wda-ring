@@ -24,6 +24,7 @@ const ringStorage = (key, action, ring) => {
 }
 
 const setRing = (ring) => {
+  console.log('ring background - setting ringtone:', ring);
   app.configureSounds({
     ring: ring
   });
@@ -37,10 +38,29 @@ const handleRing = (msg) => {
   switch(ring) {
     case "original":
       ringStorage(storageKey, "delete");
+      // Apply default sound immediately
+      applyDefaultRingtone();
       break;
     default:
       const sound = `${url}/sounds/${ring}`;
       ringStorage(storageKey, "set", sound);
+      // Apply the new ringtone immediately (use external as default active ringtone)
+      applyDefaultRingtone();
+      break;
+  }
+}
+
+// Apply the default ringtone (external preferred, then internal)
+const applyDefaultRingtone = () => {
+  const ringExternal = ringStorage(STORAGE_KEY_EXTERNAL);
+  const ringInternal = ringStorage(STORAGE_KEY_INTERNAL);
+
+  if (ringExternal) {
+    setRing(ringExternal);
+  } else if (ringInternal) {
+    setRing(ringInternal);
+  } else {
+    app.resetSounds();
   }
 }
 
@@ -48,6 +68,10 @@ const handleRing = (msg) => {
 const handleIncomingCall = (direction) => {
   const ringInternal = ringStorage(STORAGE_KEY_INTERNAL);
   const ringExternal = ringStorage(STORAGE_KEY_EXTERNAL);
+
+  console.log('ring background - handleIncomingCall, direction:', direction);
+  console.log('ring background - ringInternal:', ringInternal);
+  console.log('ring background - ringExternal:', ringExternal);
 
   if (direction === 'internal' && ringInternal) {
     setRing(ringInternal);
@@ -66,13 +90,17 @@ const handleIncomingCall = (direction) => {
 }
 
 // Listen for WebSocket messages to detect call direction
+// Message structure: {"op": "event", "code": 0, "data": {"name": "call_created", "data": {"direction": "internal", ...}}}
 app.onWebsocketMessage = (message) => {
   try {
-    const data = typeof message === 'string' ? JSON.parse(message) : message;
+    const wsMessage = typeof message === 'string' ? JSON.parse(message) : message;
+
+    // Navigate to the event data: wsMessage.data contains {name, data: {direction, is_caller, ...}}
+    const eventData = wsMessage?.data;
 
     // Check for call_created event (incoming call)
-    if (data?.name === 'call_created' && data?.data) {
-      const callData = data.data;
+    if (eventData?.name === 'call_created' && eventData?.data) {
+      const callData = eventData.data;
 
       // Only handle incoming calls (is_caller: false means we're receiving the call)
       if (callData.is_caller === false && callData.direction) {
@@ -82,6 +110,7 @@ app.onWebsocketMessage = (message) => {
     }
   } catch (e) {
     // Not a JSON message or parsing error, ignore
+    console.log('ring background - websocket parse error:', e);
   }
 }
 
@@ -107,15 +136,8 @@ app.onBackgroundMessage = msg => {
   const context = app.getContext();
   url = context.app.extra.baseUrl;
 
-  // Set initial ringtone (external as default, or internal if only that is set)
-  const ringExternal = ringStorage(STORAGE_KEY_EXTERNAL);
-  const ringInternal = ringStorage(STORAGE_KEY_INTERNAL);
-
-  if (ringExternal) {
-    setRing(ringExternal);
-  } else if (ringInternal) {
-    setRing(ringInternal);
-  }
+  // Set initial ringtone
+  applyDefaultRingtone();
 
   console.log('ring background - background launched');
 })();
