@@ -7,16 +7,20 @@ let url;
 
 const app = new App();
 
-const ringStorage = (action, ring) => {
+// Storage keys
+const STORAGE_KEY_INTERNAL = "ringInternal";
+const STORAGE_KEY_EXTERNAL = "ringExternal";
+
+const ringStorage = (key, action, ring) => {
   switch(action) {
     case "set":
-      localStorage.setItem("ring", ring);
+      localStorage.setItem(key, ring);
       break;
     case "delete":
-      localStorage.removeItem("ring");
+      localStorage.removeItem(key);
       break;
   }
-  return localStorage.getItem("ring");
+  return localStorage.getItem(key);
 }
 
 const setRing = (ring) => {
@@ -27,15 +31,57 @@ const setRing = (ring) => {
 
 const handleRing = (msg) => {
   const ring = msg.data;
+  const type = msg.type; // 'internal' or 'external'
+  const storageKey = type === 'internal' ? STORAGE_KEY_INTERNAL : STORAGE_KEY_EXTERNAL;
+
   switch(ring) {
     case "original":
-      app.resetSounds();
-      ringStorage("delete")
+      ringStorage(storageKey, "delete");
       break;
     default:
       const sound = `${url}/sounds/${ring}`;
-      ringStorage("set", sound);
-      setRing(sound);
+      ringStorage(storageKey, "set", sound);
+  }
+}
+
+// Handle incoming call and set the appropriate ringtone based on call direction
+const handleIncomingCall = (direction) => {
+  const ringInternal = ringStorage(STORAGE_KEY_INTERNAL);
+  const ringExternal = ringStorage(STORAGE_KEY_EXTERNAL);
+
+  if (direction === 'internal' && ringInternal) {
+    setRing(ringInternal);
+  } else if (direction === 'inbound' && ringExternal) {
+    setRing(ringExternal);
+  } else {
+    // Fallback: use any configured ringtone or reset to default
+    if (ringExternal) {
+      setRing(ringExternal);
+    } else if (ringInternal) {
+      setRing(ringInternal);
+    } else {
+      app.resetSounds();
+    }
+  }
+}
+
+// Listen for WebSocket messages to detect call direction
+app.onWebsocketMessage = (message) => {
+  try {
+    const data = typeof message === 'string' ? JSON.parse(message) : message;
+
+    // Check for call_created event (incoming call)
+    if (data?.name === 'call_created' && data?.data) {
+      const callData = data.data;
+
+      // Only handle incoming calls (is_caller: false means we're receiving the call)
+      if (callData.is_caller === false && callData.direction) {
+        console.log('ring background - incoming call detected, direction:', callData.direction);
+        handleIncomingCall(callData.direction);
+      }
+    }
+  } catch (e) {
+    // Not a JSON message or parsing error, ignore
   }
 }
 
@@ -44,11 +90,16 @@ app.onBackgroundMessage = msg => {
     case "ring":
       handleRing(msg);
       break;
-   case "config":
-     const ring = ringStorage();
-     app.sendMessageToIframe({value: 'config', ring: ring});
-     break;
-  } 
+    case "config":
+      const ringInternal = ringStorage(STORAGE_KEY_INTERNAL);
+      const ringExternal = ringStorage(STORAGE_KEY_EXTERNAL);
+      app.sendMessageToIframe({
+        value: 'config',
+        ringInternal: ringInternal,
+        ringExternal: ringExternal
+      });
+      break;
+  }
 }
 
 (async () => {
@@ -56,9 +107,15 @@ app.onBackgroundMessage = msg => {
   const context = app.getContext();
   url = context.app.extra.baseUrl;
 
-  const ring = ringStorage();
-  if (ring) {
-    setRing(ring);
+  // Set initial ringtone (external as default, or internal if only that is set)
+  const ringExternal = ringStorage(STORAGE_KEY_EXTERNAL);
+  const ringInternal = ringStorage(STORAGE_KEY_INTERNAL);
+
+  if (ringExternal) {
+    setRing(ringExternal);
+  } else if (ringInternal) {
+    setRing(ringInternal);
   }
+
   console.log('ring background - background launched');
 })();

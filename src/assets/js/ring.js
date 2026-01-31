@@ -8,9 +8,16 @@ let audio;
 let url;
 
 const app = new App();
-const ringElem = document.getElementById("ring");
-const playButton = document.getElementById("playButton");
-const stopButton = document.getElementById("stopButton");
+
+// Elements for internal calls
+const ringInternalElem = document.getElementById("ring-internal");
+const playButtonInternal = document.getElementById("playButton-internal");
+const stopButtonInternal = document.getElementById("stopButton-internal");
+
+// Elements for external calls
+const ringExternalElem = document.getElementById("ring-external");
+const playButtonExternal = document.getElementById("playButton-external");
+const stopButtonExternal = document.getElementById("stopButton-external");
 
 const options = {
   "original": "Reset to original",
@@ -23,29 +30,28 @@ const options = {
   "ring3.wav": "Ring 3",
   "ring4.wav": "Ring 4",
   "ring5.wav": "Ring 5",
-  "dark_side_ringtone.mp3": "Star Wars",
   "bird2.mp3": "Bird",
   "sf-oiseau-24.mp3": "Bird 1",
   "oiseau2.mp3": "Bird 2",
   "sf_oiseau_seul_01.mp3": "Bird 3",
   "sf_oiseaux.mp3": "Bird 4",
   "sf_canari.mp3": "Canary",
-  "zelda_lost_woods.mp3": "Zelda 1",
-  "hedwigs.mp3": "Harry Potter",
   "lg_bubble.mp3": "Bubble",
-  "marimba.wav": "Marimba",
-  "stranger_things.mp3": "Stranger Things",
-  "breaking_bad.mp3": "Breaking Bad",
-  "Helldivers2.mp3": "Helldivers2",
   "huawei.mp3": "Huawei",
   "lg_peanut.mp3": "Peanut",
   "xylo.mp3": "Xylophone"
 };
 
 app.onIframeMessage = (msg) => {
-  if (msg.ring) {
-    const ring = msg.ring.split("/").pop();
-    ringElem.value = ring;
+  if (msg.value === 'config') {
+    if (msg.ringInternal) {
+      const ring = msg.ringInternal.split("/").pop();
+      ringInternalElem.value = ring;
+    }
+    if (msg.ringExternal) {
+      const ring = msg.ringExternal.split("/").pop();
+      ringExternalElem.value = ring;
+    }
   }
 }
 
@@ -72,20 +78,39 @@ const stopListenRingbackTone = () => {
 }
 
 const addEventsListener = () => {
-  ring.addEventListener("change", function() {
-    const ring = ringElem.value;
-    app.sendMessageToBackground({value: 'ring', data: ring});
+  // Internal ring events
+  ringInternalElem.addEventListener("change", function() {
+    const ring = ringInternalElem.value;
+    app.sendMessageToBackground({value: 'ring', type: 'internal', data: ring});
     stopListenRingbackTone();
   });
 
-  playButton.addEventListener("click", () => {
-    const ring = ringElem.value;
+  playButtonInternal.addEventListener("click", () => {
+    const ring = ringInternalElem.value;
     const path = `${url}/sounds/${ring}`;
     stopListenRingbackTone();
     listenRingbackTone(path);
   });
 
-  stopButton.addEventListener("click", () => {
+  stopButtonInternal.addEventListener("click", () => {
+    stopListenRingbackTone();
+  });
+
+  // External ring events
+  ringExternalElem.addEventListener("change", function() {
+    const ring = ringExternalElem.value;
+    app.sendMessageToBackground({value: 'ring', type: 'external', data: ring});
+    stopListenRingbackTone();
+  });
+
+  playButtonExternal.addEventListener("click", () => {
+    const ring = ringExternalElem.value;
+    const path = `${url}/sounds/${ring}`;
+    stopListenRingbackTone();
+    listenRingbackTone(path);
+  });
+
+  stopButtonExternal.addEventListener("click", () => {
     stopListenRingbackTone();
   });
 }
@@ -96,7 +121,8 @@ const addEventsListener = () => {
   const lang = context.app.locale;
   url = context.app.extra.baseUrl;
 
-  addOptionMenu(options, "ring");
+  addOptionMenu(options, "ring-internal");
+  addOptionMenu(options, "ring-external");
   addEventsListener();
 
   app.sendMessageToBackground({value: 'config'});
@@ -108,16 +134,19 @@ const addEventsListener = () => {
     resources: {
       en: {
         translation: {
-          "choose_ring": "Select your ringtone"
+          "ring_internal": "Internal calls ringtone",
+          "ring_external": "External calls ringtone"
         }
       },
       fr: {
         translation: {
-          "choose_ring": "Choisissez votre sonnerie"
+          "ring_internal": "Sonnerie appels internes",
+          "ring_external": "Sonnerie appels externes"
         }
       }
     }
   });
 
-  document.getElementById('choose-ring').innerHTML = i18next.t('choose_ring');
+  document.getElementById('label-internal').innerHTML = i18next.t('ring_internal');
+  document.getElementById('label-external').innerHTML = i18next.t('ring_external');
 })();
