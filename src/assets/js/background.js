@@ -38,13 +38,11 @@ const handleRing = (msg) => {
   switch(ring) {
     case "original":
       ringStorage(storageKey, "delete");
-      // Apply default sound immediately
       applyDefaultRingtone();
       break;
     default:
       const sound = `${url}/sounds/${ring}`;
       ringStorage(storageKey, "set", sound);
-      // Apply the new ringtone immediately (use external as default active ringtone)
       applyDefaultRingtone();
       break;
   }
@@ -64,21 +62,43 @@ const applyDefaultRingtone = () => {
   }
 }
 
-// Handle incoming call and set the appropriate ringtone based on call direction
-const handleIncomingCall = (direction) => {
+// Determine if a call is internal based on the caller number
+// Internal extensions are typically short (3-5 digits)
+const isInternalCall = (callerNumber) => {
+  if (!callerNumber) return false;
+  // Remove any non-digit characters
+  const digits = callerNumber.replace(/\D/g, '');
+  // Internal extensions are typically 3-5 digits
+  return digits.length >= 3 && digits.length <= 5;
+}
+
+// Handle incoming call and set the appropriate ringtone
+const handleIncomingCall = (direction, callerNumber) => {
   const ringInternal = ringStorage(STORAGE_KEY_INTERNAL);
   const ringExternal = ringStorage(STORAGE_KEY_EXTERNAL);
 
-  console.log('ring background - handleIncomingCall, direction:', direction);
+  console.log('ring background - handleIncomingCall');
+  console.log('ring background - direction:', direction);
+  console.log('ring background - callerNumber:', callerNumber);
   console.log('ring background - ringInternal:', ringInternal);
   console.log('ring background - ringExternal:', ringExternal);
 
-  if (direction === 'internal' && ringInternal) {
+  // Determine if internal: use direction if available, otherwise analyze caller number
+  let isInternal = false;
+  if (direction) {
+    isInternal = (direction === 'internal');
+  } else if (callerNumber) {
+    isInternal = isInternalCall(callerNumber);
+  }
+
+  console.log('ring background - isInternal:', isInternal);
+
+  if (isInternal && ringInternal) {
     setRing(ringInternal);
-  } else if (direction === 'inbound' && ringExternal) {
+  } else if (!isInternal && ringExternal) {
     setRing(ringExternal);
   } else {
-    // Fallback: use any configured ringtone or reset to default
+    // Fallback
     if (ringExternal) {
       setRing(ringExternal);
     } else if (ringInternal) {
@@ -89,29 +109,58 @@ const handleIncomingCall = (direction) => {
   }
 }
 
-// Listen for WebSocket messages to detect call direction
-// Message structure: {"op": "event", "code": 0, "data": {"name": "call_created", "data": {"direction": "internal", ...}}}
+// Track call direction from WebSocket messages
+let lastCallDirection = null;
+
+// Listen for WebSocket messages to get call direction
 app.onWebsocketMessage = (message) => {
+  console.log('ring background - websocket message received:', message);
   try {
     const wsMessage = typeof message === 'string' ? JSON.parse(message) : message;
+    console.log('ring background - parsed websocket:', JSON.stringify(wsMessage));
 
-    // Navigate to the event data: wsMessage.data contains {name, data: {direction, is_caller, ...}}
-    const eventData = wsMessage?.data;
+    // Try different message structures
+    // Structure 1: {op, code, data: {name, data: {direction}}}
+    // Structure 2: {name, data: {direction}}
+    let eventName = null;
+    let callData = null;
 
-    // Check for call_created event (incoming call)
-    if (eventData?.name === 'call_created' && eventData?.data) {
-      const callData = eventData.data;
+    if (wsMessage?.data?.name && wsMessage?.data?.data) {
+      // Structure 1
+      eventName = wsMessage.data.name;
+      callData = wsMessage.data.data;
+    } else if (wsMessage?.name && wsMessage?.data) {
+      // Structure 2
+      eventName = wsMessage.name;
+      callData = wsMessage.data;
+    }
 
-      // Only handle incoming calls (is_caller: false means we're receiving the call)
+    if (eventName === 'call_created' && callData) {
+      console.log('ring background - call_created event detected');
+      console.log('ring background - callData:', JSON.stringify(callData));
+
       if (callData.is_caller === false && callData.direction) {
-        console.log('ring background - incoming call detected, direction:', callData.direction);
-        handleIncomingCall(callData.direction);
+        lastCallDirection = callData.direction;
+        console.log('ring background - stored direction:', lastCallDirection);
+        handleIncomingCall(callData.direction, callData.peer_caller_id_number);
       }
     }
   } catch (e) {
-    // Not a JSON message or parsing error, ignore
-    console.log('ring background - websocket parse error:', e);
+    console.log('ring background - websocket error:', e);
   }
+}
+
+// Listen for SDK call incoming event
+app.onCallIncoming = (call) => {
+  console.log('ring background - onCallIncoming triggered');
+  console.log('ring background - call object:', JSON.stringify(call));
+
+  // Use stored direction from websocket if available, otherwise analyze number
+  const callerNumber = call.callerNumber || call.number;
+  handleIncomingCall(lastCallDirection, callerNumber);
+
+  // Reset for next call
+  lastCallDirection = null;
 }
 
 app.onBackgroundMessage = msg => {
@@ -136,8 +185,7 @@ app.onBackgroundMessage = msg => {
   const context = app.getContext();
   url = context.app.extra.baseUrl;
 
-  // Set initial ringtone
   applyDefaultRingtone();
 
-  console.log('ring background - background launched');
+  console.log('ring background - background launched, listening for calls...');
 })();
