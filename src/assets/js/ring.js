@@ -4,7 +4,8 @@ import i18next from "i18next";
 
 const json = require('../../manifest.json');
 
-let audio;
+let audio = null;
+let currentPlayingButton = null;
 let url;
 
 const app = new App();
@@ -12,12 +13,10 @@ const app = new App();
 // Elements for internal calls
 const ringInternalElem = document.getElementById("ring-internal");
 const playButtonInternal = document.getElementById("playButton-internal");
-const stopButtonInternal = document.getElementById("stopButton-internal");
 
 // Elements for external calls
 const ringExternalElem = document.getElementById("ring-external");
 const playButtonExternal = document.getElementById("playButton-external");
-const stopButtonExternal = document.getElementById("stopButton-external");
 
 const options = {
   "original": "Reset to original",
@@ -66,15 +65,50 @@ const addOptionMenu = (options, idMenu) => {
   }
 }
 
-const listenRingbackTone = (path) => {
-  audio = new Audio(path);
-  audio.play();
-}
-
-const stopListenRingbackTone = () => {
+const stopAudio = () => {
   if (audio) {
     audio.pause();
+    audio.currentTime = 0;
+    audio = null;
   }
+  if (currentPlayingButton) {
+    currentPlayingButton.classList.remove('playing');
+    currentPlayingButton = null;
+  }
+}
+
+const togglePlay = (button, ringElem) => {
+  const isCurrentlyPlaying = button.classList.contains('playing');
+
+  // Stop any playing audio first
+  stopAudio();
+
+  // If it was playing, we just stop (toggle off)
+  if (isCurrentlyPlaying) {
+    return;
+  }
+
+  // Start playing
+  const ring = ringElem.value;
+  if (ring === 'original') {
+    return; // Can't preview "original"
+  }
+
+  const path = `${url}/sounds/${ring}`;
+  audio = new Audio(path);
+  audio.loop = false;
+
+  // When audio ends, reset button state
+  audio.addEventListener('ended', () => {
+    stopAudio();
+  });
+
+  audio.play().then(() => {
+    button.classList.add('playing');
+    currentPlayingButton = button;
+  }).catch(e => {
+    console.log('Audio play error:', e);
+  });
 }
 
 const addEventsListener = () => {
@@ -82,36 +116,22 @@ const addEventsListener = () => {
   ringInternalElem.addEventListener("change", function() {
     const ring = ringInternalElem.value;
     app.sendMessageToBackground({value: 'ring', type: 'internal', data: ring});
-    stopListenRingbackTone();
+    stopAudio();
   });
 
   playButtonInternal.addEventListener("click", () => {
-    const ring = ringInternalElem.value;
-    const path = `${url}/sounds/${ring}`;
-    stopListenRingbackTone();
-    listenRingbackTone(path);
-  });
-
-  stopButtonInternal.addEventListener("click", () => {
-    stopListenRingbackTone();
+    togglePlay(playButtonInternal, ringInternalElem);
   });
 
   // External ring events
   ringExternalElem.addEventListener("change", function() {
     const ring = ringExternalElem.value;
     app.sendMessageToBackground({value: 'ring', type: 'external', data: ring});
-    stopListenRingbackTone();
+    stopAudio();
   });
 
   playButtonExternal.addEventListener("click", () => {
-    const ring = ringExternalElem.value;
-    const path = `${url}/sounds/${ring}`;
-    stopListenRingbackTone();
-    listenRingbackTone(path);
-  });
-
-  stopButtonExternal.addEventListener("click", () => {
-    stopListenRingbackTone();
+    togglePlay(playButtonExternal, ringExternalElem);
   });
 }
 
@@ -119,7 +139,7 @@ const addEventsListener = () => {
   await app.initialize();
   const context = app.getContext();
   const lang = context.app.locale;
-  url = context.app.extra.baseUrl;
+  url = (context.app.extra.baseUrl || '').replace(/\/$/, '');
 
   addOptionMenu(options, "ring-internal");
   addOptionMenu(options, "ring-external");
@@ -134,14 +154,14 @@ const addEventsListener = () => {
     resources: {
       en: {
         translation: {
-          "ring_internal": "Internal calls ringtone",
-          "ring_external": "External calls ringtone"
+          "ring_internal": "Internal calls",
+          "ring_external": "External calls"
         }
       },
       fr: {
         translation: {
-          "ring_internal": "Sonnerie appels internes",
-          "ring_external": "Sonnerie appels externes"
+          "ring_internal": "Appels internes",
+          "ring_external": "Appels externes"
         }
       }
     }
