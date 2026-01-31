@@ -62,8 +62,12 @@ const config = {
             template: './src/index.html',
         }),
         new CopyPlugin({
-            
+
             patterns: [
+                {
+                    from: "./src/manifest.json",
+                    to: "./manifest.json"
+                },
                 {
                     from: "./src/assets/i18n",
                     globOptions: {
