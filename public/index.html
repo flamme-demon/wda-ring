@@ -1,13 +1,102 @@
-<html><head><link href="https://cdn.muicss.com/mui-0.10.3/css/mui.min.css" rel="stylesheet"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"><style>.mui-select {
-      display: inline-block;
-      vertical-align: middle;
-      width: auto;
+<!doctype html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"/><link rel="stylesheet" href="https://cdn.muicss.com/mui-0.10.3/css/mui.min.css"/><style>* {
+      box-sizing: border-box;
     }
-    .button-container {
-      display: inline-block;
-      vertical-align: middle;
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
-    .mui-btn {
-      vertical-align: middle;
-      margin-left: 30px;
-    }</style><script defer="defer" src="assets/js/ring.js"></script><script defer="defer" src="assets/js/background.js"></script></head><body style="background-color: initial;"><div class="mui-container"><div class="mui-select"><select id="ring"></select> <label id="choose-ring"></label></div><div class="button-container"><button id="playButton" class="mui-btn mui-btn--small"><i class="fas fa-play"></i></button> <button id="stopButton" class="mui-btn mui-btn--small"><i class="fas fa-stop"></i></button></div></div></body><script src="https://cdn.muicss.com/mui-0.10.3/js/mui.min.js"></script></html>
+    .container {
+      padding: 16px;
+    }
+    .ring-section {
+      margin-bottom: 20px;
+    }
+    .ring-section:last-child {
+      margin-bottom: 0;
+    }
+    .section-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #666;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .ring-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .ring-select {
+      flex: 1;
+      padding: 8px 10px;
+      font-size: 13px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background: #fff;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.2s;
+      min-width: 0;
+    }
+    .ring-select:hover {
+      border-color: #bbb;
+    }
+    .ring-select:focus {
+      border-color: #2196F3;
+    }
+    .btn-icon {
+      width: 36px;
+      height: 36px;
+      border: none;
+      border-radius: 50%;
+      background: #f0f0f0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .btn-icon:hover {
+      background: #e0e0e0;
+    }
+    .btn-icon.playing {
+      background: #2196F3;
+    }
+    .btn-icon.playing:hover {
+      background: #1976D2;
+    }
+    .btn-icon svg {
+      width: 14px;
+      height: 14px;
+      fill: #555;
+    }
+    .btn-icon.playing svg {
+      fill: #fff;
+    }
+    .play-icon, .stop-icon {
+      display: none;
+    }
+    .btn-icon .play-icon {
+      display: block;
+    }
+    .btn-icon.playing .play-icon {
+      display: none;
+    }
+    .btn-icon.playing .stop-icon {
+      display: block;
+    }
+    .file-input {
+      display: none;
+    }
+    .custom-name {
+      font-size: 11px;
+      color: #888;
+      margin-top: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }</style><script defer="defer" src="assets/js/ring.js"></script><script defer="defer" src="assets/js/background.js"></script></head><body><div class="container"><div class="ring-section"><div class="section-title" id="label-internal"></div><div class="ring-row"><select id="ring-internal" class="ring-select"></select> <button id="playButton-internal" class="btn-icon" title="Test"><svg class="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> <svg class="stop-icon" viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg></button> <button id="browseButton-internal" class="btn-icon" title="Parcourir"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button> <input type="file" id="fileInput-internal" class="file-input" accept="audio/*"></div><div id="customName-internal" class="custom-name"></div></div><div class="ring-section"><div class="section-title" id="label-external"></div><div class="ring-row"><select id="ring-external" class="ring-select"></select> <button id="playButton-external" class="btn-icon" title="Test"><svg class="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> <svg class="stop-icon" viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg></button> <button id="browseButton-external" class="btn-icon" title="Parcourir"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button> <input type="file" id="fileInput-external" class="file-input" accept="audio/*"></div><div id="customName-external" class="custom-name"></div></div></div></body></html>
