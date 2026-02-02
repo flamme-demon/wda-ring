@@ -1,5 +1,4 @@
-import { App } from '@wazo/euc-plugins-sdk';
-import i18next from "i18next";
+import { App } from 'https://unpkg.com/@wazo/euc-plugins-sdk/dist/esm/app.js';
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
 
