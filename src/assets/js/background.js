@@ -1,6 +1,4 @@
-import {
-  App
-} from '@wazo/euc-plugins-sdk';
+import { App } from 'https://esm.sh/@wazo/euc-plugins-sdk@0.0.23';
 
 
 let url;
