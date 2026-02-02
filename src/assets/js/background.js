@@ -1,4 +1,4 @@
-import { App } from 'https://unpkg.com/@wazo/euc-plugins-sdk/dist/esm/app.js';
+import { App } from 'https://esm.sh/@wazo/euc-plugins-sdk@0.0.23';
 
 
 let url;
