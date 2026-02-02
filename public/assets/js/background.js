@@ -1,2 +1,171 @@
-(()=>{"use strict";var e={7:e=>{var t,i="object"==typeof Reflect?Reflect:null,n=i&&"function"==typeof i.apply?i.apply:function(e,t,i){return Function.prototype.apply.call(e,t,i)};t=i&&"function"==typeof i.ownKeys?i.ownKeys:Object.getOwnPropertySymbols?function(e){return Object.getOwnPropertyNames(e).concat(Object.getOwnPropertySymbols(e))}:function(e){return Object.getOwnPropertyNames(e)};var s=Number.isNaN||function(e){return e!=e};function a(){a.init.call(this)}e.exports=a,e.exports.once=function(e,t){return new Promise((function(i,n){function s(i){e.removeListener(t,a),n(i)}function a(){"function"==typeof e.removeListener&&e.removeListener("error",s),i([].slice.call(arguments))}E(e,t,a,{once:!0}),"error"!==t&&function(e,t,i){"function"==typeof e.on&&E(e,"error",t,{once:!0})}(e,s)}))},a.EventEmitter=a,a.prototype._events=void 0,a.prototype._eventsCount=0,a.prototype._maxListeners=void 0;var o=10;function r(e){if("function"!=typeof e)throw new TypeError('The "listener" argument must be of type Function. Received type '+typeof e)}function d(e){return void 0===e._maxListeners?a.defaultMaxListeners:e._maxListeners}function l(e,t,i,n){var s,a,o,l;if(r(i),void 0===(a=e._events)?(a=e._events=Object.create(null),e._eventsCount=0):(void 0!==a.newListener&&(e.emit("newListener",t,i.listener?i.listener:i),a=e._events),o=a[t]),void 0===o)o=a[t]=i,++e._eventsCount;else if("function"==typeof o?o=a[t]=n?[i,o]:[o,i]:n?o.unshift(i):o.push(i),(s=d(e))>0&&o.length>s&&!o.warned){o.warned=!0;var h=new Error("Possible EventEmitter memory leak detected. "+o.length+" "+String(t)+" listeners added. Use emitter.setMaxListeners() to increase limit");h.name="MaxListenersExceededWarning",h.emitter=e,h.type=t,h.count=o.length,l=h,console&&console.warn&&console.warn(l)}return e}function h(){if(!this.fired)return this.target.removeListener(this.type,this.wrapFn),this.fired=!0,0===arguments.length?this.listener.call(this.target):this.listener.apply(this.target,arguments)}function c(e,t,i){var n={fired:!1,wrapFn:void 0,target:e,type:t,listener:i},s=h.bind(n);return s.listener=i,n.wrapFn=s,s}function _(e,t,i){var n=e._events;if(void 0===n)return[];var s=n[t];return void 0===s?[]:"function"==typeof s?i?[s.listener||s]:[s]:i?function(e){for(var t=new Array(e.length),i=0;i<t.length;++i)t[i]=e[i].listener||e[i];return t}(s):g(s,s.length)}function u(e){var t=this._events;if(void 0!==t){var i=t[e];if("function"==typeof i)return 1;if(void 0!==i)return i.length}return 0}function g(e,t){for(var i=new Array(t),n=0;n<t;++n)i[n]=e[n];return i}function E(e,t,i,n){if("function"==typeof e.on)n.once?e.once(t,i):e.on(t,i);else{if("function"!=typeof e.addEventListener)throw new TypeError('The "emitter" argument must be of type EventEmitter. Received type '+typeof e);e.addEventListener(t,(function s(a){n.once&&e.removeEventListener(t,s),i(a)}))}}Object.defineProperty(a,"defaultMaxListeners",{enumerable:!0,get:function(){return o},set:function(e){if("number"!=typeof e||e<0||s(e))throw new RangeError('The value of "defaultMaxListeners" is out of range. It must be a non-negative number. Received '+e+".");o=e}}),a.init=function(){void 0!==this._events&&this._events!==Object.getPrototypeOf(this)._events||(this._events=Object.create(null),this._eventsCount=0),this._maxListeners=this._maxListeners||void 0},a.prototype.setMaxListeners=function(e){if("number"!=typeof e||e<0||s(e))throw new RangeError('The value of "n" is out of range. It must be a non-negative number. Received '+e+".");return this._maxListeners=e,this},a.prototype.getMaxListeners=function(){return d(this)},a.prototype.emit=function(e){for(var t=[],i=1;i<arguments.length;i++)t.push(arguments[i]);var s="error"===e,a=this._events;if(void 0!==a)s=s&&void 0===a.error;else if(!s)return!1;if(s){var o;if(t.length>0&&(o=t[0]),o instanceof Error)throw o;var r=new Error("Unhandled error."+(o?" ("+o.message+")":""));throw r.context=o,r}var d=a[e];if(void 0===d)return!1;if("function"==typeof d)n(d,this,t);else{var l=d.length,h=g(d,l);for(i=0;i<l;++i)n(h[i],this,t)}return!0},a.prototype.addListener=function(e,t){return l(this,e,t,!1)},a.prototype.on=a.prototype.addListener,a.prototype.prependListener=function(e,t){return l(this,e,t,!0)},a.prototype.once=function(e,t){return r(t),this.on(e,c(this,e,t)),this},a.prototype.prependOnceListener=function(e,t){return r(t),this.prependListener(e,c(this,e,t)),this},a.prototype.removeListener=function(e,t){var i,n,s,a,o;if(r(t),void 0===(n=this._events))return this;if(void 0===(i=n[e]))return this;if(i===t||i.listener===t)0==--this._eventsCount?this._events=Object.create(null):(delete n[e],n.removeListener&&this.emit("removeListener",e,i.listener||t));else if("function"!=typeof i){for(s=-1,a=i.length-1;a>=0;a--)if(i[a]===t||i[a].listener===t){o=i[a].listener,s=a;break}if(s<0)return this;0===s?i.shift():function(e,t){for(;t+1<e.length;t++)e[t]=e[t+1];e.pop()}(i,s),1===i.length&&(n[e]=i[0]),void 0!==n.removeListener&&this.emit("removeListener",e,o||t)}return this},a.prototype.off=a.prototype.removeListener,a.prototype.removeAllListeners=function(e){var t,i,n;if(void 0===(i=this._events))return this;if(void 0===i.removeListener)return 0===arguments.length?(this._events=Object.create(null),this._eventsCount=0):void 0!==i[e]&&(0==--this._eventsCount?this._events=Object.create(null):delete i[e]),this;if(0===arguments.length){var s,a=Object.keys(i);for(n=0;n<a.length;++n)"removeListener"!==(s=a[n])&&this.removeAllListeners(s);return this.removeAllListeners("removeListener"),this._events=Object.create(null),this._eventsCount=0,this}if("function"==typeof(t=i[e]))this.removeListener(e,t);else if(void 0!==t)for(n=t.length-1;n>=0;n--)this.removeListener(e,t[n]);return this},a.prototype.listeners=function(e){return _(this,e,!0)},a.prototype.rawListeners=function(e){return _(this,e,!1)},a.listenerCount=function(e,t){return"function"==typeof e.listenerCount?e.listenerCount(t):u.call(e,t)},a.prototype.listenerCount=u,a.prototype.eventNames=function(){return this._eventsCount>0?t(this._events):[]}}},t={};function i(n){var s=t[n];if(void 0!==s)return s.exports;var a=t[n]={exports:{}};return e[n](a,a.exports,i),a.exports}i.n=e=>{var t=e&&e.__esModule?()=>e.default:()=>e;return i.d(t,{a:t}),t},i.d=(e,t)=>{for(var n in t)i.o(t,n)&&!i.o(e,n)&&Object.defineProperty(e,n,{enumerable:!0,get:t[n]})},i.o=(e,t)=>Object.prototype.hasOwnProperty.call(e,t),(()=>{const e="wazo/EVENT_APP_INITIALIZE",t="wazo/mobile/EVENT_MOBILE_ON_MENU_ACTION";class n{constructor(){if(this.onNewSession=e=>{},this.onUnLoaded=e=>{},this.onPluginUnLoaded=()=>{},this.onAppUnLoaded=e=>{},this.onIframeMessage=e=>{},this.onBackgroundMessage=e=>{},this.onLogout=()=>{},this.onCallIncoming=e=>{},this.onCallMade=e=>{},this.onCallAnswered=e=>{},this.onCallAccepted=e=>{},this.onCallHungUp=e=>{},this.onUnHandledEvent=e=>{},this.onWebsocketMessage=e=>{},this.onMeetingCreated=e=>{},this.onRouteChanged=(e,t)=>{},this.onUserJoinRoom=e=>{},this.onUserLeaveRoom=e=>{},this.onParticipantJoinRoom=(e,t)=>{},this.onParticipantLeaveRoom=(e,t)=>{},this.onConnectedToStack=e=>{},this.onSwitchTenant=(e,t)=>{},this.initialize=async()=>this.isInitialized()?Promise.resolve():(window.addEventListener("message",this._onMessage,!1),new Promise(((t,i)=>{this._sendMessage(e,{bg:this._isBackground,pluginId:this._pluginId}),this._initializeTimeout=setTimeout((()=>{this._initializeTimeout=null,i("SDK initialize timeout")}),5e3),this._initializeResolve=t}))),this.isInitialized=()=>this._initializeCompleted,this.getContext=()=>this.context,this.sendMessageToIframe=e=>this._sendMessage("wazo/EVENT_SEND_IFRAME_MESSAGE",{payload:e}),this.sendMessageToBackground=e=>this._sendMessage("wazo/EVENT_SEND_BACKGROUND_MESSAGE",{payload:e}),this.startCall=({targets:e,requestedModalities:t=["audio"]})=>{this._sendMessage("wazo/START_CALL",{targets:e,requestedModalities:t})},this.openLink=e=>{this._sendMessage("wazo/EVENT_OPEN_LINK",{url:e})},this.createMeeting=(e,t=!1,i=!1)=>{this._sendMessage("wazo/EVENT_CREATE_MEETING",{name:e,requireAuthorization:t,persistent:i})},this.openMeetingLobby=e=>{this._sendMessage("wazo/EVENT_OPEN_MEETING_LOBBY",{extension:e})},this.openSettings=()=>{},this.closeLeftPanel=()=>this._sendMessage("wazo/EVENT_CLOSE_LEFT_PANEL"),this.openLeftPanel=()=>this._sendMessage("wazo/EVENT_OPEN_LEFT_PANEL"),this.playProgressSound=()=>this._sendMessage("wazo/EVENT_PLAY_PROGRESS_SOUND"),this.playNewMessageSound=()=>this._sendMessage("wazo/EVENT_PLAY_NEW_MESSAGE_SOUND"),this.playIncomingCallSound=()=>this._sendMessage("wazo/EVENT_PLAY_INCOMING_CALL_SOUND"),this.playDoubleCallSound=()=>this._sendMessage("wazo/EVENT_PLAY_DOUBLE_CALL_SOUND"),this.playHangupSound=()=>this._sendMessage("wazo/EVENT_PLAY_HANGUP_SOUND"),this.stopCurrentSound=()=>this._sendMessage("wazo/EVENT_STOP_CURRENT_SOUND"),this.configureSounds=e=>this._sendMessage("wazo/EVENT_CONFIGURE_SOUNDS",{sounds:e}),this.resetSounds=()=>this._sendMessage("wazo/EVENT_RESET_SOUNDS"),this.changeNavBarColor=e=>this._sendMessage("wazo/EVENT_CHANGE_NAVBAR_COLOR",{color:e}),this.resetNavBarColor=()=>this._sendMessage("wazo/EVENT_RESET_NAVBAR_COLOR"),this.displayNotification=(e,t)=>this._sendMessage("wazo/EVENT_DISPLAY_NOTIFICATION",{title:e,text:t}),this.displayModal=({url:e,title:t,text:i,htmlText:n,height:s,width:a,hideCloseButton:o})=>this._sendMessage("wazo/EVENT_DISPLAY_MODAL",{url:e,title:t,text:i,htmlText:n,height:s,width:a,hideCloseButton:o}),this.removeModal=()=>this._sendMessage("wazo/EVENT_REMOVE_MODAL"),this.hasLocalVideoStream=e=>Wazo.Phone.phone.hasALocalVideoTrack(e),this.getLocalCurrentVideoStream=e=>Wazo.Phone.phone.getLocalVideoStream(e),this.hasRemoveVideoStream=e=>Wazo.Phone.phone.hasRemoteVideo(e),this.getRemoteVideoStream=e=>Wazo.Phone.phone.getRemoteVideoStream(e),this.updateBadge=e=>this._sendMessage("wazo/EVENT_UPDATE_BADGE",{...e,entityId:e.entityId||this._entityId||"update-badge-null-entity-id"}),this.displayBanner=e=>this._sendMessage("wazo/EVENT_DISPLAY_BANNER",{...e,entityId:this._entityId||"display-banner-null-entity-id"}),this.closeBanner=()=>this._sendMessage("wazo/EVENT_REMOVE_BANNER",{entityId:this._entityId||"remove-banner-null-entity-id"}),this.changeToolbarDisplay=e=>this._sendMessage("wazo/EVENT_CHANGE_TOOLBAR_DISPLAY",{display:e}),this.setMobileHeader=({title:e,callback:t},i)=>{const n=i||this._entityId;n&&(delete this._headerBackCallbacks[n],"function"==typeof t&&(this._headerBackCallbacks[n]=t)),this._sendMessage("wazo/mobile/EVENT_MOBILE_HEADER",{headerTitle:e,emitHeaderBack:!!t,entityId:i||this._entityId})},this.setMobileContextualMenu=(e,t)=>this._sendMessage("wazo/mobile/EVENT_MOBILE_CONTEXTUAL_MENU",{contextualMenu:e,entityId:t||this._entityId}),this.setMobileShowBottomNav=(e,t)=>this._sendMessage("wazo/mobile/EVENT_MOBILE_SHOW_BOTTOM_NAV",{showBottomNav:e,entityId:t||this._entityId}),this.onMobileMenuAction=e=>this.sendMessageToIframe({type:t,id:e}),this._onMessage=e=>{if(e.data)switch(e.data.type){case"wazo/ON_LOADED":this._onLoaded(e.data.session,e.data.theme,e.data.locale,e.data.extra);break;case"wazo/EVENT_APP_UNLOADED":delete this._headerBackCallbacks[e.data.tabId],this.onAppUnLoaded(e.data.tabId);break;case"wazo/EVENT_PLUGIN_UNLOADED":this._unloadPlugin();break;case"wazo/EVENT_ON_LOGOUT":this.onLogout(),this._unloadPlugin();break;case"wazo/EVENT_ON_NEW_SESSION":this.onNewSession(e.data.session);break;case"wazo/EVENT_ON_IFRAME_MESSAGE":e.data._pluginId===this._pluginId&&this.onIframeMessage(e.data.payload);break;case"wazo/EVENT_ON_BACKGROUND_MESSAGE":e.data._pluginId===this._pluginId&&this.onBackgroundMessage(e.data.payload);break;case"wazo/EVENT_USER_JOIN_ROOM":this.onUserJoinRoom(e.data.room);break;case"wazo/EVENT_USER_LEAVE_ROOM":this.onUserLeaveRoom(e.data.room);break;case"wazo/EVENT_PARTICIPANT_JOIN_ROOM":this.onParticipantJoinRoom(e.data.room,e.data.participant);break;case"wazo/EVENT_PARTICIPANT_LEAVE_ROOM":this.onParticipantLeaveRoom(e.data.room,e.data.participant);break;case"wazo/EVENT_WS_MESSAGE":this.onWebsocketMessage(e.data.message);break;case"wazo/EVENT_ON_MEETING_CREATED":this.onMeetingCreated(e.data.meeting);break;case"wazo/EVENT_ROUTE_CHANGE":this.onRouteChanged(e.data.location,e.data.action);break;case"wazo/EVENT_ON_CALL_INCOMING":this.onCallIncoming(e.data.call);break;case"wazo/EVENT_ON_CALL_MADE":this.onCallMade(e.data.call);break;case"wazo/EVENT_ON_CALL_ANSWERED":this.onCallAnswered(e.data.call);break;case"wazo/EVENT_ON_CALL_ACCEPTED":this.onCallAccepted(e.data.call);break;case"wazo/EVENT_ON_CALL_HUNG_UP":this.onCallHungUp(e.data.call);break;case"wazo/EVENT_ON_CONNECTED_TO_STACK":this.onConnectedToStack(e.data.stackSession);break;case"wazo/EVENT_ON_SWITCH_STACK_TENANT":this.onSwitchTenant(e.data.tenant.uuid,e.data.tenant.name);break;case"wazo/mobile/EVENT_MOBILE_ON_HEADER_BACK":const i=this._headerBackCallbacks[e.data.entityId||this._entityId];"function"==typeof i&&i();break;case t:this.onMobileMenuAction(e.data);break;default:this.onUnHandledEvent(e)}},this._sendMessage=(t,i={})=>{if(this.isInitialized()||t===e)return window.ReactNativeWebView?window.ReactNativeWebView.postMessage(JSON.stringify({type:t,_pluginId:this._pluginId,_entityId:this._entityId,...i})):void window.parent.postMessage({type:t,_pluginId:this._pluginId,_entityId:this._entityId,...i},"*");this._queuedMessages.push({type:t,payload:i})},this._sendQueuedMessages=()=>{this._queuedMessages.forEach((({type:e,payload:t})=>{this._sendMessage(e,t)}))},this._onLoaded=(e,t,i,n)=>{null===this._initializeTimeout||this.isInitialized()||(clearTimeout(this._initializeTimeout),this._initializeCompleted=!0,this.context.app={locale:i,theme:t,host:{clientType:n?n.clientType:null},extra:{...n,baseUrl:this._baseUrl,pluginId:this._pluginId}},this.context.user=e,this._initializeResolve&&this._initializeResolve(),this._sendQueuedMessages())},this._setPluginId=e=>{this._pluginId=e},this._unloadPlugin=()=>{this.onPluginUnLoaded(),this._resetEvents()},this._configurePlugin=e=>{e.pluginId&&(this._pluginId=e.pluginId),e.baseUrl&&(this._baseUrl=e.baseUrl),e.entityId&&(this._entityId=e.entityId)},this._resetEvents=()=>{this.onUnLoaded=e=>{},this.onPluginUnLoaded=()=>{},this.onAppUnLoaded=e=>{},this.onIframeMessage=e=>{},this.onBackgroundMessage=e=>{},this.onLogout=()=>{},this.onNewSession=e=>{},this.onCallIncoming=e=>{},this.onCallMade=e=>{},this.onCallAnswered=e=>{},this.onCallAccepted=e=>{},this.onCallHungUp=e=>{},this.onUnHandledEvent=e=>{},this.onWebsocketMessage=e=>{},this.onMeetingCreated=e=>{},this.onRouteChanged=(e,t)=>{},this.onConnectedToStack=e=>{},this.onSwitchTenant=(e,t)=>{}},this._resetEvents(),this._initializeCompleted=!1,this._initializeResolve=null,this._initializeTimeout=null,this._pluginId=globalThis?.pluginId||null,this._baseUrl=null,this._entityId=null,this._isBackground=!window.name,this._queuedMessages=[],this._headerBackCallbacks={},this.context={app:{locale:null,theme:null,host:{clientType:null},extra:null}},window.onunload=e=>{this.onUnLoaded(e)},window.name)try{this._configurePlugin(JSON.parse(window.name))}catch(e){this._configurePlugin({pluginId:window.name})}globalThis._setPluginId=this._setPluginId,globalThis._configurePlugin=this._configurePlugin}ignoreCall(e){this._sendMessage("wazo/EVENT_IGNORE_CALL",{call:e})}}new n;var s=i(7),a=i.n(s);const o="bridge/CONFIG_RETRIEVED";class r extends(a()){constructor(){super(...arguments),this.url="https://softphone.wazo.io",this.width=500,this.height=600,this.iframeCss={left:0,bottom:0},this.displayed=!1,this.wrapper=null,this.iframe=null,this.iframeLoaded=!1,this.session=null,this._pendingMessages=[]}onLinkEnabled(e){}onIFrameLoaded(){}onCallLocallyAnswered(e){}onCallEstablished(e){}onOutgoingCallMade(e){}onCallIncoming(e){}onCallRejected(e){}onCallEnded(e,t,i,n){}onCardSaved(e){}onCardCanceled(){}onAuthenticated(e){}onLoggedOut(){}onSearchOptions(e,t){this.onOptionsResults(e,[])}onDisplayLinkedOption(e){}onWazoContactSearch(e){}onAgentLoggedIn(){}onAgentLoggedOut(){}onAgentPaused(){}onAgentResumed(){}onLanguageChanged(e){}onCallHeld(){}onCallResumed(){}onCallMuted(){}onCallUnMuted(){}onDtmfSent(e){}onDirectTransfer(e){}onCreateIndirectTransfer(e){}onCancelIndirectTransfer(){}onConfirmIndirectTransfer(){}onIndirectCallMade(e){}onIndirectTransferDone(e){}onStartRecording(){}onStopRecording(){}onCallLogCreated(e){}onWebsocketMessage(e){}onUnHandledEvent(e){}init({url:e,width:t,height:i,server:n,port:s,language:a,wrapUpDuration:r,iframeCss:d,enableAgent:l=!0,tenantId:h,domainName:c,debug:_=!1,disableAutoLogin:u=!1}){if(this.url=e||this.url,this.width=t||this.width,this.height=i||this.height,this.iframeCss=d||this.iframeCss,this.displayed=!1,this.iframeLoaded=!1,this.iframeLoaded=!1,this._pendingMessages=[],window.addEventListener("message",this._onMessage.bind(this),!1),!n)throw new Error("`server` is not set");const g={server:n,disableAutoLogin:u};a&&(g.language=a),s&&(g.port=s),h&&(console.warn("Use of `tenantId` is deprecated when calling `Softphone.init()`, use `domainName` instead"),g.tenantId=h),c&&(g.domainName=c),r&&(g.wrapUpDuration=r),this._sendMessage(o,{config:g}),l&&this._sendMessage("bridge/BRIDGE_ENABLE_AGENT"),_&&this._sendMessage("bridge/BRIDGE_ENABLE_DEBUG"),this._createIframe((()=>{this.iframeLoaded=!0,this._pendingMessages.forEach((([e,t])=>this._sendMessage(e,t))),this.onIFrameLoaded()}))}parseLinks(){this._getLinks().forEach((e=>{e.setAttribute("data-wazo-parsed","true"),e.addEventListener("click",this._onLinkClick.bind(this)),this.onLinkEnabled(e)}))}removeParsedLinksEvent(){[].slice.call(document.querySelectorAll("a[data-wazo-parsed]"),0).forEach((e=>{e.removeAttribute("data-wazo-parsed"),e.removeEventListener("click",this._onLinkClick.bind(this))}))}makeCall(e){this.show(),this._sendMessage("bridge/ON_CLICK_TO_CALL",{number:e})}toggleDisplay(){this.displayed?this.hide():this.show()}show(){this.iframe||this._createIframe(),this.iframe&&(this.iframe.style.display="block"),this.displayed=!0,this.emit("show")}hide(){this.iframe&&(this.iframe.style.display="none"),this.displayed=!1,this.emit("hide")}remove(){this.iframe&&this.iframe.remove(),this.wrapper&&this.wrapper.remove(),this.iframe=null,this.wrapper=null}optionsFetched(e,t){this._sendMessage("bridge/BRIDGE_OPTIONS_FETCHED",{fieldId:e,options:t})}onOptionsResults(e,t){this._sendMessage("bridge/BRIDGE_OPTIONS_FOUND",{fieldId:e,options:t})}setFormSchema(e,t){this._sendMessage("bridge/BRIDGE_UPDATE_FORM_SCHEMA",{schema:e,uiSchema:t})}setCardValue(e,t){this._sendMessage("bridge/BRIDGE_SET_CARD_CONTENT",{field:e,value:t})}injectCss(e){this._sendMessage("bridge/BRIDGE_INJECT_CSS",{css:e})}customizeAppearance(e,t,i){this._sendMessage("bridge/BRIDGE_CUSTOMIZE_APPEARANCE",{themes:e,translations:t,assets:i})}loginWithToken(e,t){this._sendMessage("bridge/BRIDGE_LOGIN_WITH_TOKEN",{token:e,refreshToken:t})}configureServer(e){this._sendMessage(o,{config:{server:e}})}updateCss(e=null){e&&(this.wrapper&&Object.keys(e).forEach((t=>{this.wrapper.style[t]=e[t]})),this.iframeCss=e)}_createIframe(e){this.remove(),this.wrapper=document.createElement("div"),this.wrapper.id="iframe-wrapper",this.wrapper.style.position="fixed",this.updateCss(this.iframeCss),this.iframe=document.createElement("iframe"),this.iframe.width=String(this.width),this.iframe.height=String(this.height),this.iframe.allow="camera *; microphone *; autoplay *; display-capture *",this.iframe.style.border="1px solid #aaa",this.iframe.style.backgroundColor="white",this.iframe.style.display="none",this.iframe.src=this.url,this.iframe.id="wazo-softphone",e&&(this.iframe.onload=e),this.wrapper.appendChild(this.iframe),document.body.appendChild(this.wrapper)}_getLinks(){return[].slice.call(document.querySelectorAll("a:not([data-wazo-parsed])"),0).filter((e=>0===e.href.indexOf("tel:")||0===e.href.indexOf("callto:")))}_onLinkClick(e){e.preventDefault();const t=e.target.href.split("//")[1];this.makeCall(t)}_onAuthenticated(e){this.session=e,this.parseLinks()}_onMessage(e){if(e.data)switch(e.data.type){case"sdk/SDK_ON_OUTGOING_CALL_MADE":this.onOutgoingCallMade(e.data.callSession);break;case"sdk/ON_CALL_ENDED":{const{callSession:t,content:i,direction:n,userExtension:s}=e.data;this.onCallEnded(t,i,n,s);break}case"sdk/SDK_CALL_INCOMING":this.onCallIncoming(e.data.callSession);break;case"sdk/SDK_AUTHENTICATED":this._onAuthenticated(e.data.session),this.onAuthenticated(e.data.session);break;case"bridge/LOGGED_OUT":this.onLoggedOut();break;case"bridge/BRIDGE_CREATE_OR_UPDATE_CARD":{const{content:t}=e.data;this.onCardSaved(t);break}case"bridge/BRIDGE_SEARCH_OPTIONS":{const{fieldId:t,query:i}=e.data;this.onSearchOptions(t,i);break}case"bridge/DISPLAY_LINKED_OPTION":this.onDisplayLinkedOption(e.data.linkedOptionId);break;case"bridge/BRIDGE_WAZO_CONTACT_SEARCH":this.onWazoContactSearch(e.data.query);break;case"bridge/BRIDGE_ON_AGENT_LOGGED_IN":this.onAgentLoggedIn();break;case"bridge/BRIDGE_ON_AGENT_LOGGED_OUT":this.onAgentLoggedOut();break;case"bridge/BRIDGE_ON_AGENT_PAUSED":this.onAgentPaused();break;case"bridge/BRIDGE_ON_AGENT_RESUMED":this.onAgentResumed();break;case"bridge/BRIDGE_ON_LANGUAGE_CHANGED":this.onLanguageChanged(e.data.language);break;case"bridge/BRIDGE_ON_CALL_HELD":this.onCallHeld();break;case"bridge/BRIDGE_ON_CALL_RESUMED":this.onCallResumed();break;case"bridge/BRIDGE_ON_CALL_MUTED":this.onCallMuted();break;case"bridge/BRIDGE_ON_CALL_UN_MUTED":this.onCallUnMuted();break;case"bridge/BRIDGE_ON_DTMF":this.onDtmfSent(e.data.tone);break;case"bridge/BRIDGE_ON_DIRECT_TRANSFER":this.onDirectTransfer(e.data.number);break;case"bridge/BRIDGE_ON_CREATE_INDIRECT_TRANSFER":this.onCreateIndirectTransfer(e.data.number);break;case"bridge/BRIDGE_ON_CANCEL_INDIRECT_TRANSFER":this.onCancelIndirectTransfer();break;case"bridge/BRIDGE_ON_CONFIRM_INDIRECT_TRANSFER":this.onConfirmIndirectTransfer();break;case"bridge/BRIDGE_ON_INDIRECT_TRANSFER_CALL_MADE":this.onIndirectCallMade(e.data.call);break;case"bridge/BRIDGE_ON_INDIRECT_TRANSFER_DONE":this.onIndirectTransferDone(e.data.call);break;case"bridge/BRIDGE_ON_START_RECORDING":this.onStartRecording();break;case"bridge/BRIDGE_ON_STOP_RECORDING":this.onStopRecording();break;case"bridge/BRIDGE_ON_CARD_CANCELED":this.onCardCanceled();break;case"bridge/BRIDGE_ON_CALL_LOCALLY_ACCEPTED":this.onCallLocallyAnswered(e.data.call);break;case"bridge/BRIDGE_ON_CALL_REJECTED":this.onCallRejected(e.data.call);break;case"bridge/BRIDGE_ON_CALL_ESTABLISHED":this.onCallEstablished(e.data.call);break;case"bridge/BRIDGE_CALL_LOG_CREATED":this.onCallLogCreated(e.data.callLog);break;case"bridge/BRIDGE_ON_WEBSOCKET_MESSAGE":this.onWebsocketMessage(e.data.message);break;default:this.onUnHandledEvent(e)}}_sendMessage(e,t={}){this.iframe&&this.iframeLoaded?this.iframe&&this.iframe.contentWindow&&this.iframe.contentWindow.postMessage({type:e,...t},"*"):this._pendingMessages.push([e,t])}}let d;new r;const l=new n,h="ringInternal",c="ringExternal",_=(e,t,i)=>{switch(t){case"set":localStorage.setItem(e,i);break;case"delete":localStorage.removeItem(e)}return localStorage.getItem(e)},u=(e,t)=>{const i=_(h),n=_(c);console.log("ring background - handleIncomingCall"),console.log("ring background - direction:",e),console.log("ring background - callerNumber:",t),console.log("ring background - ringInternal:",i),console.log("ring background - ringExternal:",n);let s=!1;e?s="internal"===e:t&&(s=(e=>{if(!e)return!1;const t=e.replace(/\D/g,"");return t.length>=3&&t.length<=5})(t)),console.log("ring background - isInternal:",s);let a=null;s&&i?a=i:!s&&n||n?a=n:i&&(a=i),a&&(console.log("ring background - configuring and playing:",a),l.stopCurrentSound(),l.configureSounds({ring:a}),l.playIncomingCallSound())};let g=new Set;l.onWebsocketMessage=e=>{try{const t="string"==typeof e?JSON.parse(e):e;if("call_created"===t?.name&&t?.data){const e=t.data;if(!1===e.is_caller&&e.direction){const t=e.sip_call_id||e.call_id;g.has(t)||(g.add(t),console.log("ring background - call_created, handling call:",t),u(e.direction,e.peer_caller_id_number),setTimeout((()=>g.delete(t)),3e4))}}}catch(e){console.log("ring background - websocket error:",e)}},l.onCallIncoming=e=>{console.log("ring background - onCallIncoming:",e.sipCallId);const t=e.sipCallId||e.callId;if(!g.has(t)){g.add(t);const i=e.callerNumber||e.number;u(null,i),setTimeout((()=>g.delete(t)),3e4)}},l.onBackgroundMessage=e=>{switch(e.value){case"ring":(e=>{const t=e.data,i="internal"===e.type?h:c;switch(t){case"original":_(i,"delete");break;case"custom":e.customData&&_(i,"set",e.customData);break;default:_(i,"set",`${d}/sounds/${t}`)}})(e);break;case"config":const t=_(h),i=_(c);l.sendMessageToIframe({value:"config",ringInternal:t,ringExternal:i})}},(async()=>{await l.initialize();const e=l.getContext();d=(e.app.extra.baseUrl||"").replace(/\/$/,""),console.log("ring background - background launched, url:",d)})()})()})();
-//# sourceMappingURL=background.js.map
+import {
+  App
+} from '@wazo/euc-plugins-sdk';
+
+
+let url;
+
+const app = new App();
+
+// Storage keys
+const STORAGE_KEY_INTERNAL = "ringInternal";
+const STORAGE_KEY_EXTERNAL = "ringExternal";
+
+const ringStorage = (key, action, ring) => {
+  switch(action) {
+    case "set":
+      localStorage.setItem(key, ring);
+      break;
+    case "delete":
+      localStorage.removeItem(key);
+      break;
+  }
+  return localStorage.getItem(key);
+}
+
+const handleRing = (msg) => {
+  const ring = msg.data;
+  const type = msg.type; // 'internal' or 'external'
+  const storageKey = type === 'internal' ? STORAGE_KEY_INTERNAL : STORAGE_KEY_EXTERNAL;
+
+  switch(ring) {
+    case "original":
+      ringStorage(storageKey, "delete");
+      break;
+    case "custom":
+      // Custom file: store the base64 data directly
+      if (msg.customData) {
+        ringStorage(storageKey, "set", msg.customData);
+      }
+      break;
+    default:
+      const sound = `${url}/sounds/${ring}`;
+      ringStorage(storageKey, "set", sound);
+      break;
+  }
+}
+
+// Determine if a call is internal based on the caller number
+const isInternalCall = (callerNumber) => {
+  if (!callerNumber) return false;
+  const digits = callerNumber.replace(/\D/g, '');
+  return digits.length >= 3 && digits.length <= 5;
+}
+
+// Handle incoming call - configure and play the appropriate ringtone
+const handleIncomingCall = (direction, callerNumber) => {
+  const ringInternal = ringStorage(STORAGE_KEY_INTERNAL);
+  const ringExternal = ringStorage(STORAGE_KEY_EXTERNAL);
+
+  console.log('ring background - handleIncomingCall');
+  console.log('ring background - direction:', direction);
+  console.log('ring background - callerNumber:', callerNumber);
+  console.log('ring background - ringInternal:', ringInternal);
+  console.log('ring background - ringExternal:', ringExternal);
+
+  // Determine if internal
+  let isInternal = false;
+  if (direction) {
+    isInternal = (direction === 'internal');
+  } else if (callerNumber) {
+    isInternal = isInternalCall(callerNumber);
+  }
+
+  console.log('ring background - isInternal:', isInternal);
+
+  // Determine which ringtone to use
+  let ringtoneToPlay = null;
+
+  if (isInternal && ringInternal) {
+    ringtoneToPlay = ringInternal;
+  } else if (!isInternal && ringExternal) {
+    ringtoneToPlay = ringExternal;
+  } else if (ringExternal) {
+    ringtoneToPlay = ringExternal;
+  } else if (ringInternal) {
+    ringtoneToPlay = ringInternal;
+  }
+
+  if (ringtoneToPlay) {
+    console.log('ring background - configuring and playing:', ringtoneToPlay);
+
+    // Stop current sound, configure new ringtone, then play it
+    app.stopCurrentSound();
+    app.configureSounds({ ring: ringtoneToPlay });
+    app.playIncomingCallSound();
+  }
+}
+
+// Track if we already handled the current call
+let handledCallIds = new Set();
+
+// Listen for WebSocket messages to get call direction
+app.onWebsocketMessage = (message) => {
+  try {
+    const wsMessage = typeof message === 'string' ? JSON.parse(message) : message;
+
+    // Structure: {name: "call_created", data: {direction, is_caller, sip_call_id, ...}}
+    if (wsMessage?.name === 'call_created' && wsMessage?.data) {
+      const callData = wsMessage.data;
+
+      // Only handle incoming calls (is_caller: false)
+      if (callData.is_caller === false && callData.direction) {
+        const callId = callData.sip_call_id || callData.call_id;
+
+        // Avoid handling the same call twice
+        if (!handledCallIds.has(callId)) {
+          handledCallIds.add(callId);
+          console.log('ring background - call_created, handling call:', callId);
+          handleIncomingCall(callData.direction, callData.peer_caller_id_number);
+
+          // Clean up old call IDs after 30 seconds
+          setTimeout(() => handledCallIds.delete(callId), 30000);
+        }
+      }
+    }
+  } catch (e) {
+    console.log('ring background - websocket error:', e);
+  }
+}
+
+// Listen for SDK call events
+app.onCallIncoming = (call) => {
+  console.log('ring background - onCallIncoming:', call.sipCallId);
+
+  const callId = call.sipCallId || call.callId;
+
+  // Only handle if not already handled by websocket
+  if (!handledCallIds.has(callId)) {
+    handledCallIds.add(callId);
+    const callerNumber = call.callerNumber || call.number;
+    handleIncomingCall(null, callerNumber);
+
+    setTimeout(() => handledCallIds.delete(callId), 30000);
+  }
+}
+
+app.onBackgroundMessage = msg => {
+  switch(msg.value) {
+    case "ring":
+      handleRing(msg);
+      break;
+    case "config":
+      const ringInternal = ringStorage(STORAGE_KEY_INTERNAL);
+      const ringExternal = ringStorage(STORAGE_KEY_EXTERNAL);
+      app.sendMessageToIframe({
+        value: 'config',
+        ringInternal: ringInternal,
+        ringExternal: ringExternal
+      });
+      break;
+  }
+}
+
+(async () => {
+  await app.initialize();
+  const context = app.getContext();
+  // Remove trailing slash if present to avoid double slashes
+  url = (context.app.extra.baseUrl || '').replace(/\/$/, '');
+
+  console.log('ring background - background launched, url:', url);
+})();

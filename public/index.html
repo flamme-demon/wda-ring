@@ -1,4 +1,11 @@
-<!doctype html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"/><link rel="stylesheet" href="https://cdn.muicss.com/mui-0.10.3/css/mui.min.css"/><style>* {
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://cdn.muicss.com/mui-0.10.3/css/mui.min.css"/>
+  <style>
+    * {
       box-sizing: border-box;
     }
     html, body {
@@ -99,4 +106,44 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-    }</style><script defer="defer" src="assets/js/ring.js"></script><script defer="defer" src="assets/js/background.js"></script></head><body><div class="container"><div class="ring-section"><div class="section-title" id="label-internal"></div><div class="ring-row"><select id="ring-internal" class="ring-select"></select> <button id="playButton-internal" class="btn-icon" title="Test"><svg class="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> <svg class="stop-icon" viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg></button> <button id="browseButton-internal" class="btn-icon" title="Parcourir"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button> <input type="file" id="fileInput-internal" class="file-input" accept="audio/*"></div><div id="customName-internal" class="custom-name"></div></div><div class="ring-section"><div class="section-title" id="label-external"></div><div class="ring-row"><select id="ring-external" class="ring-select"></select> <button id="playButton-external" class="btn-icon" title="Test"><svg class="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> <svg class="stop-icon" viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg></button> <button id="browseButton-external" class="btn-icon" title="Parcourir"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button> <input type="file" id="fileInput-external" class="file-input" accept="audio/*"></div><div id="customName-external" class="custom-name"></div></div></div></body></html>
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <!-- Internal calls ringtone -->
+  <div class="ring-section">
+    <div class="section-title" id="label-internal"></div>
+    <div class="ring-row">
+      <select id="ring-internal" class="ring-select"></select>
+      <button id="playButton-internal" class="btn-icon" title="Test">
+        <svg class="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        <svg class="stop-icon" viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg>
+      </button>
+      <button id="browseButton-internal" class="btn-icon" title="Parcourir">
+        <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+      </button>
+      <input type="file" id="fileInput-internal" class="file-input" accept="audio/*">
+    </div>
+    <div id="customName-internal" class="custom-name"></div>
+  </div>
+
+  <!-- External calls ringtone -->
+  <div class="ring-section">
+    <div class="section-title" id="label-external"></div>
+    <div class="ring-row">
+      <select id="ring-external" class="ring-select"></select>
+      <button id="playButton-external" class="btn-icon" title="Test">
+        <svg class="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        <svg class="stop-icon" viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg>
+      </button>
+      <button id="browseButton-external" class="btn-icon" title="Parcourir">
+        <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+      </button>
+      <input type="file" id="fileInput-external" class="file-input" accept="audio/*">
+    </div>
+    <div id="customName-external" class="custom-name"></div>
+  </div>
+</div>
+</body>
+</html>
